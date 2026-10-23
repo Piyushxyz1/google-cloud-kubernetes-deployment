@@ -1,0 +1,461 @@
+/* =========================================================
+   AUTH PAGE
+========================================================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  background: #f7f8fa;
+  color: #111318;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+
+/* =========================================================
+   LEFT SHOWCASE
+========================================================= */
+
+.auth-showcase {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #111318;
+  color: white;
+}
+
+.auth-showcase::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  top: -180px;
+  left: -180px;
+  border-radius: 50%;
+  background: #30343c;
+  filter: blur(100px);
+  opacity: 0.6;
+}
+
+.auth-showcase::after {
+  content: "";
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  right: -180px;
+  bottom: -150px;
+  border-radius: 50%;
+  background: #282c33;
+  filter: blur(100px);
+  opacity: 0.7;
+}
+
+.auth-showcase-content {
+  position: relative;
+  z-index: 2;
+  max-width: 650px;
+  margin: auto;
+  padding: 55px 8%;
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.auth-logo {
+  display: inline-flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: white;
+  line-height: 1;
+}
+
+.auth-logo strong,
+.mobile-auth-logo strong {
+  font-size: 24px;
+  letter-spacing: 2px;
+  font-weight: 900;
+}
+
+.auth-logo span,
+.mobile-auth-logo span {
+  margin-top: 5px;
+  font-size: 7px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  color: #858991;
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.auth-badge {
+  display: inline-block;
+  margin-top: 130px;
+  margin-bottom: 24px;
+  padding: 8px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 100px;
+  color: #aeb2b9;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.7px;
+}
+
+
+/* =========================================================
+   SHOWCASE TEXT
+========================================================= */
+
+.auth-showcase h1 {
+  margin: 0;
+  font-size: clamp(48px, 5vw, 75px);
+  line-height: 0.98;
+  letter-spacing: -3.5px;
+  font-weight: 900;
+}
+
+.auth-showcase h1 span {
+  color: #777c85;
+}
+
+.auth-showcase-content > p {
+  max-width: 510px;
+  margin: 27px 0;
+  color: #9da1a9;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   TECHNOLOGY IMAGE
+========================================================= */
+
+.auth-tech-visual {
+  width: 100%;
+  height: 190px;
+  margin-top: 40px;
+  overflow: hidden;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-tech-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: 0.5s ease;
+}
+
+.auth-tech-visual:hover img {
+  transform: scale(1.04);
+  opacity: 0.85;
+}
+
+
+/* =========================================================
+   FORM SIDE
+========================================================= */
+
+.auth-form-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 8%;
+  background: #f8f9fb;
+}
+
+.auth-form-container {
+  width: 100%;
+  max-width: 440px;
+}
+
+
+/* =========================================================
+   MOBILE LOGO
+========================================================= */
+
+.mobile-auth-logo {
+  display: none;
+  text-decoration: none;
+  color: #111318;
+  flex-direction: column;
+  line-height: 1;
+  margin-bottom: 45px;
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.auth-heading > span {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  color: #858991;
+}
+
+.auth-heading h2 {
+  margin: 10px 0 12px;
+  font-size: clamp(38px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -2.5px;
+  font-weight: 900;
+}
+
+.auth-heading h2 em {
+  color: #858991;
+  font-style: normal;
+}
+
+.auth-heading p {
+  margin: 0 0 35px;
+  color: #737780;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-field label,
+.password-label label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #34373d;
+}
+
+.auth-field input {
+  width: 100%;
+  height: 48px;
+  padding: 0 15px;
+  border: 1px solid #dedfe3;
+  border-radius: 8px;
+  outline: none;
+  background: white;
+  color: #111318;
+  font-size: 13px;
+  transition: 0.25s ease;
+}
+
+.auth-field input::placeholder {
+  color: #a7aab0;
+}
+
+.auth-field input:focus {
+  border-color: #111318;
+  box-shadow: 0 0 0 3px rgba(17, 19, 24, 0.05);
+}
+
+
+/* =========================================================
+   PASSWORD
+========================================================= */
+
+.password-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.password-label button {
+  border: none;
+  background: none;
+  color: #777c85;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  padding-right: 48px;
+}
+
+.password-input > button {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #858991;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.auth-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -5px;
+}
+
+.remember-me,
+.terms-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #777c85;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.remember-me input,
+.terms-check input {
+  accent-color: #111318;
+}
+
+.forgot-password {
+  border: none;
+  background: none;
+  color: #111318;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   TERMS
+========================================================= */
+
+.terms-check {
+  margin-top: -4px;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.auth-submit {
+  height: 50px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #111318;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: #292c33;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(17, 19, 24, 0.15);
+}
+
+.auth-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+/* =========================================================
+   SWITCH
+========================================================= */
+
+.auth-switch {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 27px;
+  color: #858991;
+  font-size: 11px;
+}
+
+.auth-switch a {
+  color: #111318;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-showcase {
+    display: none;
+  }
+
+  .auth-form-section {
+    min-height: 100vh;
+    padding: 45px 7%;
+  }
+
+  .mobile-auth-logo {
+    display: flex;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+
+  .auth-form-section {
+    padding: 35px 6%;
+  }
+
+  .mobile-auth-logo {
+    margin-bottom: 38px;
+  }
+
+  .auth-heading h2 {
+    font-size: 40px;
+  }
+
+  .auth-options {
+    gap: 10px;
+  }
+
+  .auth-switch {
+    font-size: 10px;
+  }
+
+}

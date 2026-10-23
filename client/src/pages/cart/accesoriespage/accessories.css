@@ -1,0 +1,441 @@
+/* =========================================
+   ACCESSORIES PAGE
+========================================= */
+
+.accessories-page {
+  min-height: 100vh;
+  background: #080b0f;
+  color: #ffffff;
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.accessories-hero {
+  min-height: 500px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 120px 7% 80px;
+
+  background:
+    radial-gradient(
+      circle at 75% 40%,
+      rgba(80, 100, 130, 0.12),
+      transparent 35%
+    ),
+    #080b0f;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+
+.accessories-hero-content {
+  max-width: 850px;
+}
+
+
+.accessories-label,
+.section-label {
+  display: inline-block;
+
+  margin-bottom: 18px;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  letter-spacing: 2px;
+
+  color: #8b949e;
+}
+
+
+.accessories-hero h1 {
+  margin: 0;
+
+  font-size: clamp(3rem, 6vw, 5.5rem);
+
+  line-height: 1;
+  letter-spacing: -3px;
+
+  font-weight: 700;
+}
+
+
+.accessories-hero h1 span {
+  color: #8b949e;
+}
+
+
+.accessories-hero-content > p {
+  max-width: 700px;
+
+  margin: 28px 0 35px;
+
+  color: #9ca3af;
+
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+
+/* =========================================
+   HERO STATS
+========================================= */
+
+.accessories-hero-stats {
+  display: flex;
+  gap: 45px;
+}
+
+
+.accessory-stat {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.accessory-stat strong {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+
+.accessory-stat span {
+  color: #737b85;
+
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+
+/* =========================================
+   FEATURES
+========================================= */
+
+.accessories-features {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 1px;
+
+  background: rgba(255, 255, 255, 0.07);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+.accessory-feature {
+  display: flex;
+  gap: 18px;
+
+  padding: 35px 7%;
+
+  background: #0b0f14;
+}
+
+
+.feature-icon {
+  min-width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+
+  font-size: 1rem;
+}
+
+
+.accessory-feature h3 {
+  margin: 0 0 8px;
+
+  font-size: 0.95rem;
+}
+
+
+.accessory-feature p {
+  margin: 0;
+
+  color: #777f89;
+
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   PRODUCTS SECTION
+========================================= */
+
+.accessories-products {
+  padding: 80px 7%;
+}
+
+
+.accessories-products-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 40px;
+
+  padding-bottom: 25px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+.accessories-products-header h2 {
+  margin: 0 0 8px;
+
+  font-size: 2.2rem;
+  letter-spacing: -1px;
+}
+
+
+.accessories-products-header p {
+  margin: 0;
+
+  color: #7d858e;
+
+  font-size: 0.9rem;
+}
+
+
+.product-count {
+  padding: 9px 15px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+
+  color: #9ca3af;
+
+  font-size: 0.8rem;
+}
+
+
+/* =========================================
+   PRODUCT GRID
+========================================= */
+
+.product-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 24px;
+}
+
+
+/* =========================================
+   BOTTOM INFORMATION
+========================================= */
+
+.accessories-info {
+  display: grid;
+
+  grid-template-columns: 1.3fr 1fr;
+
+  gap: 80px;
+
+  padding: 90px 7%;
+
+  background: #0b0f14;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+
+.accessories-info h2 {
+  margin: 0 0 25px;
+
+  font-size: 2.5rem;
+
+  line-height: 1.15;
+
+  letter-spacing: -1px;
+}
+
+
+.accessories-info p {
+  max-width: 600px;
+
+  margin: 0;
+
+  color: #858e98;
+
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+
+/* =========================================
+   INFO POINTS
+========================================= */
+
+.info-points {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.info-points div {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+
+  padding: 22px 0;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.info-points strong {
+  color: #59616b;
+
+  font-size: 0.75rem;
+}
+
+
+.info-points span {
+  color: #b8bec6;
+
+  font-size: 0.9rem;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1100px) {
+
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .accessories-features {
+    grid-template-columns: 1fr;
+  }
+
+  .accessory-feature {
+    padding: 28px 7%;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE TABLET
+========================================= */
+
+@media (max-width: 800px) {
+
+  .accessories-hero {
+    padding: 110px 6% 70px;
+  }
+
+  .accessories-hero h1 {
+    font-size: 3.5rem;
+    letter-spacing: -2px;
+  }
+
+  .accessories-hero-stats {
+    gap: 25px;
+  }
+
+  .accessories-products {
+    padding: 60px 6%;
+  }
+
+  .accessories-products-header {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .accessories-info {
+    grid-template-columns: 1fr;
+
+    gap: 45px;
+
+    padding: 65px 6%;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+
+  .accessories-hero {
+    min-height: auto;
+
+    padding: 100px 20px 60px;
+  }
+
+  .accessories-hero h1 {
+    font-size: 2.8rem;
+  }
+
+  .accessories-hero-content > p {
+    font-size: 0.9rem;
+  }
+
+  .accessories-hero-stats {
+    gap: 20px;
+  }
+
+  .accessory-stat strong {
+    font-size: 0.95rem;
+  }
+
+  .accessory-stat span {
+    font-size: 0.65rem;
+  }
+
+  .accessories-products {
+    padding: 50px 20px;
+  }
+
+  .accessories-products-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accessories-info {
+    padding: 55px 20px;
+  }
+
+  .accessories-info h2 {
+    font-size: 2rem;
+  }
+
+}

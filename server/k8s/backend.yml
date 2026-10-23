@@ -1,0 +1,38 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexora-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexora-backend
+  template:
+    metadata:
+      labels:
+        app: nexora-backend
+    spec:
+      containers:
+        - name: nexora-backend
+          image: asia-south1-docker.pkg.dev/project-b5c30372-900e-4517-a50/nexora-images/nexora-backend:v2
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: nexora-backend-secrets
+          env:
+            - name: PORT
+              value: "8000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexora-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: nexora-backend
+  ports:
+    - port: 8000
+      targetPort: 8000
