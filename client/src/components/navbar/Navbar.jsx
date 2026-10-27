@@ -105,7 +105,7 @@ const Navbar = () => {
         {/* ================= LOGO ================= */}
 
         <Link to="/" className="nav-logo">
-          <strong>NEXORA</strong>
+          <strong>NEX-TECH</strong>
           <span>TECHNOLOGIES</span>
         </Link>
 
