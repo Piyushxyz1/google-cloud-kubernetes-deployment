@@ -18,7 +18,7 @@ spec:
       containers:
         - name: nexora-backend
           image: asia-south1-docker.pkg.dev/nexora-dev-512809/nexora-dev-images/nexora-backend:8faaa6d8b8f0321696280db28ff2fe6f8baf990f
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           envFrom:

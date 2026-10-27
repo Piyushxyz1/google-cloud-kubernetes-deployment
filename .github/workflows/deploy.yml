@@ -1,14 +1,13 @@
-```yaml
-name: Build and Deploy Nexora to GKE
+
+name: Build and Deploy Nexora Backend to GKE
 
 on:
   push:
     branches:
       - dev
     paths:
-      - "client/**"
       - "server/**"
-      - "k8s/**"
+      - "k8s/backend.yaml"
       - ".github/workflows/deploy.yml"
 
   workflow_dispatch:
@@ -22,50 +21,53 @@ env:
   REGION: asia-south1
   REPOSITORY: nexora-dev-images
   NAMESPACE: nexora-dev
+  BACKEND_IMAGE: nexora-backend
 
 jobs:
   build-and-deploy:
-    name: Build, Push and Deploy
+    name: Build, Push and Deploy Backend
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout source code
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud using WIF
+      # 2. Authenticate using Workload Identity Federation
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
         with:
           project_id: nexora-dev-512809
           workload_identity_provider: projects/148158973648/locations/global/workloadIdentityPools/github-dev-pool/providers/github-dev-provider
           service_account: github-actions-dev@nexora-dev-512809.iam.gserviceaccount.com
 
+      # 3. Install Google Cloud CLI
       - name: Set up Google Cloud CLI
         uses: google-github-actions/setup-gcloud@v2
 
+      # 4. Authenticate Docker to Artifact Registry
       - name: Configure Docker authentication
         run: |
           gcloud auth configure-docker \
             asia-south1-docker.pkg.dev --quiet
 
+      # 5. Build and push backend image
       - name: Build and push backend image
+        shell: bash
         run: |
-          IMAGE="asia-south1-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/nexora-backend:${GITHUB_SHA}"
+          set -euo pipefail
 
-          docker build -t "$IMAGE" ./server
-          docker push "$IMAGE"
-
-      - name: Build and push frontend image
-        run: |
-          IMAGE="asia-south1-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/nexora-frontend:${GITHUB_SHA}"
+          IMAGE="asia-south1-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${BACKEND_IMAGE}:${GITHUB_SHA}"
 
           docker build \
-            --build-arg VITE_API_URL="" \
-            -t "$IMAGE" ./client
+            -t "$IMAGE" \
+            ./server
 
           docker push "$IMAGE"
 
-      # Configure these GitHub repository variables after
-      # the Terraform-created GKE cluster exists.
+          echo "BACKEND_IMAGE_URI=$IMAGE" >> "$GITHUB_ENV"
+
+      # 6. Connect to Terraform-created GKE cluster
       - name: Connect to GKE
         uses: google-github-actions/get-gke-credentials@v2
         with:
@@ -73,15 +75,30 @@ jobs:
           location: ${{ vars.GKE_LOCATION }}
           project_id: nexora-dev-512809
 
+      # 7. Create namespace
       - name: Ensure namespace exists
+        shell: bash
         run: |
+          set -euo pipefail
+
           kubectl create namespace "$NAMESPACE" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create or update backend runtime secrets
+      # 8. Ensure backend Kubernetes ServiceAccount exists
+      - name: Ensure backend ServiceAccount exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl create serviceaccount nexora-backend \
+            --namespace="$NAMESPACE" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # 9. Create or update backend runtime secrets
+      - name: Create or update backend secrets
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          MONGO_DB: ${{ secrets.MONGO_DB }}
+          MONGO_DB: ${{ secrets.mongo_db }}
           RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
           RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
         shell: bash
@@ -94,56 +111,34 @@ jobs:
           fi
 
           kubectl create secret generic nexora-backend-secrets \
-            --namespace=nexora-dev \
-            --from-literal=JWT_SECRET="$JWT_SECRET" \
-            --from-literal=mongo_db="$MONGO_DB" \
-            --from-literal=RAZORPAY_KEY_ID="$RAZORPAY_KEY_ID" \
-            --from-literal=RAZORPAY_KEY_SECRET="$RAZORPAY_KEY_SECRET" \
+            --namespace="$NAMESPACE" \
+            --from-literal="JWT_SECRET=$JWT_SECRET" \
+            --from-literal="mongo_db=$MONGO_DB" \
+            --from-literal="RAZORPAY_KEY_ID=$RAZORPAY_KEY_ID" \
+            --from-literal="RAZORPAY_KEY_SECRET=$RAZORPAY_KEY_SECRET" \
             --dry-run=client -o yaml | kubectl apply -f -
-        env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
+
+      # 10. Apply backend Deployment and Service
+      - name: Apply backend Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/backend.yaml
+
+      # 11. Update Deployment to the image built in this run
+      - name: Update backend image
+        run: |
+          kubectl set image deployment/nexora-backend \
+            nexora-backend="$BACKEND_IMAGE_URI" \
+            --namespace="$NAMESPACE"
+
+      # 12. Verify deployment
+      - name: Verify backend rollout
         shell: bash
         run: |
           set -euo pipefail
 
-          if [[ -z "$MONGODB_URI" || -z "$JWT_SECRET" ]]; then
-            echo "Required backend secrets are missing."
-            exit 1
-          fi
-
-          kubectl create secret generic nexora-backend-secrets \
-            --namespace="$NAMESPACE" \
-            --from-literal="MONGODB_URI=$MONGODB_URI" \
-            --from-literal="JWT_SECRET=$JWT_SECRET" \
-            --from-literal="REDIS_URL=$REDIS_URL" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Apply Kubernetes manifests
-        run: |
-          kubectl apply -f k8s/
-
-      - name: Update deployments to the new image tags
-        run: |
-          REGISTRY="asia-south1-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}"
-
-          kubectl set image deployment/nexora-backend \
-            nexora-backend="${REGISTRY}/nexora-backend:${GITHUB_SHA}" \
-            --namespace="$NAMESPACE"
-
-          kubectl set image deployment/nexora-frontend \
-            nexora-frontend="${REGISTRY}/nexora-frontend:${GITHUB_SHA}" \
-            --namespace="$NAMESPACE"
-
-      - name: Verify deployment rollout
-        run: |
           kubectl rollout status deployment/nexora-backend \
-            --namespace="$NAMESPACE" --timeout=300s
+            --namespace="$NAMESPACE" \
+            --timeout=300s
 
-          kubectl rollout status deployment/nexora-frontend \
-            --namespace="$NAMESPACE" --timeout=300s
-
-          kubectl get pods,services,ingress \
+          kubectl get pods,services \
             --namespace="$NAMESPACE"
-```
