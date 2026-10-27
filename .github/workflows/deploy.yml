@@ -6,7 +6,7 @@ on:
       - dev
     paths:
       - "server/**"
-      - "k8s/backend.yaml"
+      - "k8s/backend.yml"
       - ".github/workflows/deploy.yml"
 
   workflow_dispatch:
@@ -116,7 +116,7 @@ jobs:
       - name: Apply backend Kubernetes manifests
         run: |
           set -euo pipefail
-          kubectl apply -f k8s/backend.yaml
+          kubectl apply -f k8s/backend.yml
 
       # 11. Update Deployment to the image built in this run
       - name: Update backend image
