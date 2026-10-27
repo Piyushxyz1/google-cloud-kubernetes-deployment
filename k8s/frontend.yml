@@ -19,7 +19,15 @@ spec:
           image: asia-south1-docker.pkg.dev/nexora-dev-512809/nexora-dev-images/nexora-frontend:8faaa6d8b8f0321696280db28ff2fe6f8baf990f
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
@@ -31,5 +39,7 @@ spec:
   selector:
     app: nexora-frontend
   ports:
-    - port: 80
-      targetPort: 80
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
