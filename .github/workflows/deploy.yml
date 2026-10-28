@@ -1,0 +1,184 @@
+name: Deploy Nexora to GKE
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - "server/**"
+      - "client/**"
+      - "k8s/**"
+      - ".github/workflows/deploy.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PROJECT_ID: nexora-dev-512809
+  REGION: asia-south1
+  REPOSITORY: nexora-dev-images
+  NAMESPACE: nexora-dev
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Nexora
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout source code
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 2. Authenticate to Google Cloud
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: nexora-dev-512809
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      # 3. Set up gcloud
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      # 4. Configure Docker authentication
+      - name: Configure Docker authentication
+        run: |
+          gcloud auth configure-docker asia-south1-docker.pkg.dev --quiet
+
+      # 5. Build and push backend image
+      - name: Build and push backend image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/nexora-backend:${GITHUB_SHA}"
+
+          docker build -t "$IMAGE" ./server
+          docker push "$IMAGE"
+
+          echo "BACKEND_IMAGE_URI=$IMAGE" >> "$GITHUB_ENV"
+
+      # 6. Build and push frontend image
+      - name: Build and push frontend image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/nexora-frontend:${GITHUB_SHA}"
+
+          docker build -t "$IMAGE" ./client
+          docker push "$IMAGE"
+
+          echo "FRONTEND_IMAGE_URI=$IMAGE" >> "$GITHUB_ENV"
+
+      # 7. Connect to GKE
+      - name: Connect to GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ vars.GKE_CLUSTER_NAME }}
+          location: ${{ vars.GKE_LOCATION }}
+          project_id: nexora-dev-512809
+
+      # 8. Ensure namespace exists
+      - name: Ensure namespace exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl create namespace "$NAMESPACE" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # 9. Ensure backend ServiceAccount exists
+      - name: Ensure backend ServiceAccount exists
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl create serviceaccount nexora-backend \
+            --namespace="$NAMESPACE" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # 10. Create or update backend secrets
+      - name: Create or update backend secrets
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          MONGO_DB: ${{ secrets.mongo_db }}
+          RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+          RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$JWT_SECRET" || -z "$MONGO_DB" ]]; then
+            echo "Required backend secrets are missing."
+            exit 1
+          fi
+
+          kubectl create secret generic nexora-backend-secrets \
+            --namespace="$NAMESPACE" \
+            --from-literal="JWT_SECRET=$JWT_SECRET" \
+            --from-literal="mongo_db=$MONGO_DB" \
+            --from-literal="RAZORPAY_KEY_ID=$RAZORPAY_KEY_ID" \
+            --from-literal="RAZORPAY_KEY_SECRET=$RAZORPAY_KEY_SECRET" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # 11. Apply all Kubernetes manifests
+      - name: Apply Kubernetes manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl apply -f k8s/backend.yml
+          kubectl apply -f k8s/frontend.yml
+          kubectl apply -f k8s/ingress.yml
+
+      # 12. Update backend image
+      - name: Update backend image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl set image deployment/nexora-backend \
+            nexora-backend="$BACKEND_IMAGE_URI" \
+            --namespace="$NAMESPACE"
+
+      # 13. Update frontend image
+      - name: Update frontend image
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl set image deployment/nexora-frontend \
+            nexora-frontend="$FRONTEND_IMAGE_URI" \
+            --namespace="$NAMESPACE"
+
+      # 14. Verify backend rollout
+      - name: Verify backend rollout
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl rollout status deployment/nexora-backend \
+            --namespace="$NAMESPACE" \
+            --timeout=300s
+
+      # 15. Verify frontend rollout
+      - name: Verify frontend rollout
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl rollout status deployment/nexora-frontend \
+            --namespace="$NAMESPACE" \
+            --timeout=300s
+
+      # 16. Show final deployment status
+      - name: Show deployment status
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          kubectl get deployments,pods,services,ingress \
+            --namespace="$NAMESPACE"
