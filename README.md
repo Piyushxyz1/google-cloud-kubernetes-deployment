@@ -22,7 +22,7 @@ The frontend and backend were containerized separately, stored in Google Artifac
 - Kubernetes Secrets
 - Kubernetes Ingress
 - `kubectl`
-- `gcloud` CLI
+- `gcloud` CLI and Terraform(IFC)
 
 **Application Runtime**
 - React frontend served using Nginx
